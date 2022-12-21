@@ -1,0 +1,558 @@
+1.What is Tight and Loose Coupling?
+-> Tight:
+here service has bound with  dataservice so it cannot be used anywhere.
+public class TodoBusinessService {
+    TodoDataServiceImpl dataService = new TodoDataServiceImpl();
+
+public class ComplexAlgorithmImpl { // here alogo bound with bubblesort
+BubbleSortAlgorithm bubbleSortAlgorithm= new BubbleSortAlgorithm();
+Loose: //lets solve this problem
+@Component
+public class ComplexAlgorithmImpl {
+  @Autowired
+  private SortAlgorithm sortAlgorithm;// = new SortAlgorithm()(we are not creating instance like line no 5, but an interface)
+  public ComplexAlgorithmImpl(SortAlgorithm sortAlgorithm) {
+          this.sortAlgorithm = sortAlgorithm;// passing it through constructor
+    }
+}    
+public interface SortAlgorithm {
+    public int[] sort(int[] numbers);
+ }
+@Component
+public class QuickSortAlgorithm implements SortAlgorithm {}
+@Component
+public class BubbleSortAlgorithm implements SortAlgorithm{}
+
+
+2.What is a Dependency?
+-> web layer is depend on data layer that is called dependency.one thing depend on another.
+
+3.What is IOC (Inversion of Control)?
+-> Initially control was with class which was tightly coupled with bubbleSort like this public class ComplexAlgorithmImpl {BubbleSortAlgorithm bubbleSortAlgorithm= new BubbleSortAlgorithm();}
+Now we are creating beans and passing interface which can be implemented with any class hence we are giving control to the class which will use ComplexAlgorithmImpl,hence it is called IOC.
+(refer line 12 example)
+
+4.What is Dependency Injection?
+-> We use Spring Framework to instantiate beans and]wire dependencies that is called Dependency Injection
+ComplexAlgorithmImpl binarySearch = new ComplexAlgorithmImpl(new QuickSortAlgorithm());//traditional way
+@Component
+public class ComplexAlgorithmImpl {
+  @Autowired
+  private SortAlgorithm sortAlgorithm;//new way
+}  
+
+5.Can you give few examples of Dependency Injection?
+-> (refer line 12 example)
+
+6.What is Auto Wiring?
+-> When we write @Autowired we are telling spring to find bean SortAlgorithm and populate the dependency here.
+
+7.What are the important roles of an IOC Container?
+-> 1.find beans 2.wire dependencies 3.manage lifecycle of beans
+ If refer example on line nmbr 12,below are observation
+    1.ComplexAlgorithmImpl,QuickSortAlgorithm,BubbleSortAlgorithm are beans finding it and creating if they do not have dependency.
+    2.Now making SortAlgorithm available to ComplexAlgorithmImpl and creating bean
+
+8.What are Bean Factory and Application Context?
+-> bean factory: basic version of ioc container,it does above things.(It is used when memory constraint)
+
+9.Can you compare Bean Factory with Application Context?
+->Application Context:  bean factory + Aop feature, i18 capabilities, webapplicationcontext for webapplication.
+
+10.How do you create an application context with Spring?
+-> you can mention in xml or can create Annotation called @Configuration
+@Configuration
+class SpringContext {
+}
+Test case:
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = JavaTestContext.class)
+public class DependencyInjectionJavaContextExamples {   
+  ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringContext.class);
+}
+
+11.How does Spring know where to search for Components or Beans?
+-> @ComponentScan("package") will tell use where exactly our component kept and @Component say gievn class is component
+
+12.What is a Component Scan?
+-> @ComponentScan("package") If Spring tries to search each component in all package then it is big performance impact, to avoid that we pass package where to search component
+
+13.How do you define a component scan in XML and Java Configurations?
+-> @ComponentScan(basepackages={"package","package1"})
+
+14.How is it done with Spring Boot?
+-> @SpringBootApplication and @SpringBootTest , wherever these annotation defined that package will be automatically scanned.
+
+15.What does @Component signify?
+-> Spring should manage the bean, generic component
+
+16.What does @Autowired signify?
+-> Spring should find matching bean and wire dependency in.
+
+17.What’s the difference Between @Controller, @Component, @Repository, and @Service Annotations in Spring?
+->@Controller: controller in MVC pattern
+@Repository: encapsulating storage, retrieval and search behavior typically from relation databases.
+@Service: business service facade
+@Component: generic component
+
+18.What is the default scope of a bean?
+-> SingleTon( the gang of four defines singleton as one and only one class per classLoader however spring singleton is defined 1 instance of bean per spring container )
+
+19.Are Spring beans thread safe?
+-> Not thread safe.
+
+20.What are the other scopes available?
+ 1.SingleTon: one instance per spring context.
+ 2.prototype: New bean whenever requested
+ 3.request: one bean per http request.Web-aware SpringApplicationContext.
+ 4.session: one bean per http session.Web-aware SpringApplicationContext.
+
+21.How is Spring’s singleton bean different from Gang of Four Singleton Pattern?
+->  the gang of four defines singleton as one and only one class per classLoader however spring singleton is defined 1 instance of bean per spring container
+
+22.What are the different types of dependency injections?
+-> setter injection, constructor injection
+
+23.What is setter injection?
+-> The Spring team generally advocates constructor injection as it enables one to implement application components as immutable objects and to ensure that required dependencies are not null.
+@Component
+public class TodoBusinessService {
+    TodoDataService dataService;
+    @Autowired
+    public void setDataService (TodoDataService dataService) {
+    this.dataService = dataService;
+    }
+}    
+//Through Reflection
+@Component
+public class TodoBusinessService {
+    @Autowired
+    TodoDataService dataService;
+}
+
+24.What is constructor injection?
+-> It keeps flow immutable so preferable.
+@Component
+public class TodoBusinessService {
+    TodoDataService dataService;
+    @Autowired
+    public TodoBusinessService(TodoDataService dataService) {
+    super();
+    this.dataService = dataService;
+}
+
+25.How do you choose between setter and constructor injections?
+-> 1.Constructor Injection for Mandatory Dependencies
+   2.Setter Injection for Optional Dependencies
+
+26.What are the different options available to create Application Contexts for Spring?
+-> JAVA and XML
+
+27.What is the difference between XML and Java Configurations for Spring?
+-> JAVA:
+@Configuration
+class SpringContext {}
+ApplicationContext ctx =new AnnotationConfigApplicationContext(SpringContext.class);
+
+28.How do you choose between XML and Java Configurations for Spring?
+-> With Spring Boot, we are slowly moving towards complete Java Configuration.
+
+29.How does Spring do Autowiring?
+->
+1.byType:
+@Component
+public class ComplexAlgorithmImpl {
+  @Autowired
+  private SortAlgorithm sortAlgorithm;
+
+}    
+public interface SortAlgorithm {
+    public int[] sort(int[] numbers);
+ }
+@Component
+public class QuickSortAlgorithm implements SortAlgorithm {}
+
+
+2.byName:
+@Component
+public class ComplexAlgorithmImpl {
+  @Autowired
+  private SortAlgorithm quickSortAlgorithm;
+
+}    
+public interface SortAlgorithm {
+    public int[] sort(int[] numbers);
+ }
+@Component
+public class QuickSortAlgorithm implements SortAlgorithm {}
+@Component
+public class BubbleSortAlgorithm implements SortAlgorithm{}
+
+3.constructor - similar to byType, but through constuctor:
+@Component
+public class TodoBusinessService {
+    TodoDataService dataService;
+    @Autowired
+    public void setDataService (TodoDataService dataService) {
+    this.dataService = dataService;
+    }
+}
+
+30.What are the different kinds of matching used by Spring for Autowiring?
+-> @Primary @Qualifier
+
+31.How do you debug problems with Spring Framework?
+-> 1.NoUniqueBeanDefinitionException 2.NoSuchBeanDefinitionException
+It say either 2 beans with same name or you must have missed to mention @Component on bean or @ComponentScan for package going wrong somewhere
+
+32.How do you solve NoUniqueBeanDefinitionException?
+->using @Primary
+
+33.How do you solve NoSuchBeanDefinitionException?
+->using @Component annotation or  @ComponentScan  package
+
+34.What is @Primary?
+-> When 2 matching component get find
+- Field sortAlgorithm in BinarySearchImpl required a single bean, but 2 were found:bubbleSortAlgorithm: defined in file[BubbleSortAlgorithm.class] quickSortAlgorithm: defined in file [QuickSortAlgorithm.class]
+@Component
+@Primary //this will solve problem
+public class BubbleSortAlgorithm implements SortAlgorithm {
+}
+
+35.What is @Qualifier?
+->
+@Component
+public class ComplexAlgorithmImpl {
+    @Autowired
+    @Qualifier("mainAlgorithm")
+    private SortAlgorithm sortAlgorithm;
+}    
+@Component
+@Qualifier("mainAlgorithm")    
+public class BubbleSortAlgorithm implements SortAlgorithm {
+}    
+
+36.What is CDI (Contexts and Dependency Injection)?
+->Java EE Dependency Injection Standard (JSR-330). a standard dependency injection framework included in Java EE 6 and higher.Spring Supports most annotations:
+@Inject cdi name which is referred with (@Autowired) in spring
+@Named (@Component & @Qualifier)
+@Singleton (Defines a scope of Singleton)
+
+37.Does Spring Support CDI?
+-> no its framework similar to spring
+
+38.Would you recommend to use CDI or Spring Annotations?
+-> spring Annotations
+
+39.What are the major features in different versions of Spring?
+-> 2.5, 3, 4, 5
+
+40.What are new features in Spring Framework 4.0?
+-> Java 8 support, minimum version to use java is 6.Introduced @RestController.Supports JCache.
+
+41.What are new features in Spring Framework 5.0?
+-> support functional web framework.support java modularity.Support java reactivity.Support koltin.
+
+42.What are important Spring Modules?
+->1.Core container(beans,core,context,spql) 2.Data integration(jdbc,orm,oxm,jms,transaction) 3.web(websocket,servlet,web) 4.test 5.AOP 6.Aspects 7.instrumentation 8.messaging
+
+43.What are important Spring Projects?
+->1.spring boot 2.spring data 3.spring cloud 4.spring security 5.spring batch
+
+44.What is the simplest way of ensuring that we are using single version of all Spring related dependencies?
+-> BOM
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-framework-bom</artifactId>
+            <version>5.0.0.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+45.Name some of the design patterns used in Spring Framework?
+->
+1.Front Controller - Dispatcher Servlet
+2.Prototype - Beans
+3.Dependency Injection
+4.Factory Pattern - Bean Factory & Application Context
+5.Template Method : org.springframework.web.servlet.mvc.AbstractCon
+
+46.What do you think about Spring Framework?
+->
+1.Architecture - Flexible & No Restrictions
+2.Design - Loosely Coupled
+3.Code - Easy Unit Testing
+4.Features - Dependency Injection, IOC
+5.Container(Bean Factory & Application Context), Auto
+6.wiring, Component Scan
+7.Spring Modules
+8.Spring Projects
+
+47.Why is Spring Popular?
+-> above points
+
+48.Can you give a big picture of the Spring Framework?
+-> above points
+
+##################### SPRING BOOT ################################################################
+
+1.What is Spring Boot?
+-> Spring based applications have a lot of configuration.
+When we use Spring MVC, we need to configure component scan, dispatcher servlet, a view resolver,web jars(for delivering static content) among other things.
+
+2.What are the important Goals of Spring Boot?
+    1.Quick Start to Spring
+    2.Be opinionated
+    3.Non functional features
+    4.No code generation
+
+3.What are the important Features of Spring Boot?
+->
+    1.Auto Configuration
+    2.Spring Boot Starter Projects
+    3.Spring Boot Actuator
+    4.Embedded Server
+
+4.Compare Spring Boot vs Spring?
+Spring: 
+    1.Spring Framework is a widely used Java EE framework for building applications.
+    2.It aims to simplify Java EE development that makes developers more productive.
+    3.The primary feature of the Spring Framework is dependency injection.
+    4.It helps to make things simpler by allowing us to develop loosely coupled applications.
+    5.The developer writes a lot of code (boilerplate code) to do the minimal task.
+    6.To test the Spring project, we need to set up the sever explicitly.
+    7.It does not provide support for an in-memory database.
+    8.Developers manually define dependencies for the Spring project in pom.xml.
+
+Springboot:
+    1.Spring Boot Framework is widely used to develop REST APIs.
+    2.It aims to shorten the code length and provide the easiest way to develop Web Applications.
+    3.The primary feature of Spring Boot is Autoconfiguration. It automatically configures the classes based on the requirement.
+    4.It helps to create a stand-alone application with less configuration.
+    5.It reduces boilerplate code.
+    6.Spring Boot offers embedded server such as Jetty and Tomcat, etc.
+    7.It offers several plugins for working with an embedded and in-memory database such as H2.
+    8.Spring Boot comes with the concept of starter in pom.xml file that internally takes care of downloading the dependencies JARs based on Spring Boot Requirement.
+
+5.Compare Spring Boot vs Spring MVC?
+Spring MVC:
+    1.Spring MVC is a model view controller-based web framework under the Spring framework.
+    2.It provides ready to use features for building a web application.
+    3.It requires build configuration manually.
+    4.A Deployment descriptor is required.
+    5.It specifies each dependency separately.
+    6.It takes more time to achieve the same.
+
+
+6.What is the importance of @SpringBootApplication?
+-> @SpringBootApplication ---> it has @SpringBootConfiguration @EnableAutoConfiguration @ComponentScan
+
+7.What is Auto Configuration?
+-> springboot configures application on the basis of class and jar available on classpath is called Auto Configuration
+
+8.How can we find more information about Auto Configuration?
+-> spring-boot-autoconfigure.jar has everything.To get more details Turn on Debug logging logging.level.org.springframework:DEBUG (Use Spring Boot Actuator)
+
+9.What is an embedded server? Why is it important?
+-> Tomcat Server is embedded as part of the deployable - jar.Spring Boot also supports Jetty and UnderTow.
+-> spring-boot-starter-tomcat has it
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jetty</artifactId>
+</dependency>
+
+10.What is the default embedded server with Spring Boot?
+-> Tomcat
+
+11.What are the other embedded servers supported by Spring Boot?
+-> Spring Boot also supports Jetty and UnderTow.
+
+12.What are Starter Projects?
+->
+    1.spring-boot-starter-web-services - SOAP WebServices
+    2.spring-boot-starter-web - Web & RESTful applications
+    3.spring-boot-starter-test - Unit, Integration Testing
+    4.spring-boot-starter-jdbc - Traditional JDBC
+    5.spring-boot-starter-security - Authentication and Authorization using Spring Security
+    6.spring-boot-starter-data-jpa - Spring Data JPA with Hibernate
+    7.spring-boot-starter-cache - Enabling Spring Framework’s caching support
+    8.spring-boot-starter-data-rest - Expose Simple REST Services using Spring Data REST
+    9.spring-boot-starter-actuator - To use advanced features like monitoring & tracing to your application out of the box
+    10.spring-boot-starter-undertow
+    11.spring-boot-starterjetty
+    12.spring-boot-starter-tomcat - To pick your specific choice of Embedded Servlet Container
+    13.spring-boot-starter-logging - For Logging using logback
+    14.spring-boot-starter-log4j2 - Logging using Log4j2
+
+
+
+16.How does Spring Boot enforce common dependency management for all its Starter projects?
+
+17.What is Spring Initializr?
+-> Spring Initializr https://start.spring.io/ is great tool to bootstrap your Spring Boot projects.
+
+18.What is application.properties?
+-> application.properties is used to configure your Spring Boot Application
+
+19.What are some of the important things that can customized in application.properties?
+->
+    logging.file=
+    logging.level.*=
+    spring.autoconfigure.exclude=
+    spring.profiles.active=
+    server.error.path=/error
+    server.port=8080
+    spring.http.converters.preferred-json-mapper=jackson
+
+20.How do you externalize configuration using Spring Boot?
+->
+
+21.How can you add custom application properties using Spring Boot?
+
+22.What is @ConfigurationProperties?
+->
+import org.springframework.boot.context.properties.ConfigurationPropertie@Component
+
+@ConfigurationProperties("basic")
+public class BasicConfiguration {
+    private boolean value;
+    private String message;
+    private int number;
+}
+
+23.What is a profile?
+-> Based on the active profile, appropriate configuration is picked up.Used to Configure Resources - Databases, Queues, External Services
+
+24.How do you define beans for a specific profile?
+-> Using -Dspring.profiles.active=prod in VM Arguments
+In application.properties,spring.profiles.active=prod
+
+
+25.How do you create application configuration for a specific profile?
+@Profile("dev")
+@Bean
+public String devBean() {
+  return "I will be available in profile dev";
+}
+@Profile("prod")
+@Bean
+public String prodBean() {
+  return "I will be available in profile prod";
+}
+
+26.How do you have different configuration for different environments?
+->
+    application-dev.properties
+    application-qa.properties
+    application-stage.properties
+    application-prod.properties
+    application.properties
+
+27.What is Spring Boot Actuator?
+-> Monitoring /env, /metrics, /trace, /dump /beans, / autoconfig, /configprops, /mappings
+
+28.How do you monitor web services using Spring Boot Actuator?
+->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+29.How do you find more information about your application envrionment using Spring Boot?
+->enable actuator
+management.endpoints.web.exposure.include=loggers
+management.endpoint.loggers.enabled=true
+management.endpoints.web.base-path=/
+
+30.What is a CommandLineRunner?
+-> public interface CommandLineRunner {
+      void run(String... args) throws Exception;
+}
+
+31.how cyclic dependency works?(if there are 3 beans initiaze at the start, how can be handled?)
+
+******************************* interview questions **********************************************
+
+1.what is java stream?
+->a sequence of objects that supports various methods which can be pipelined to produce the desired result.
+
+2.what is map, and refers to what internally 
+-> HashMap, LinkedHashMap, and TreeMap
+
+3.what if you want initalise bean on the basis of property?
+-> https://www.baeldung.com/circular-dependencies-in-spring
+    1.When we have a circular dependency, it’s likely we have a design problem and that the responsibilities are not well separated. We should try to redesign the components properly.
+    2.simple way to break the cycle is by telling Spring to initialize one of the beans lazily. So, instead of fully initializing the bean, 
+    it will create a proxy to inject it into the other bean. The injected bean will only be fully created when it’s first needed. 
+    3.Simply put, we can address the problem by changing the ways our beans are wired — to use setter injection (or field injection) 
+    instead of constructor injection. This way, Spring creates the beans, but the dependencies are not injected until they are needed.
+    4.Another way to break the cycle is by injecting a dependency using @Autowired on one of the beans and then using a method annotated with @PostConstruct to set the other dependency.
+    5.If one of the beans implements ApplicationContextAware, the bean has access to Spring context and can extract the other bean from there.
+
+4.what annotation we use for composite key as a ID?
+->  @EmbeddedId
+    private MyKey myKey;
+    @Embeddable
+public class MyKey implements Serializable {
+
+    @Column(name = "Id", nullable = false)
+    private int id;
+
+    @Column(name = "Version", nullable = false)
+    private int version;
+
+    /** getters and setters **/
+}
+or 
+@Entity
+@IdClass(MyKey.class)
+public class YourEntity {
+   @Id
+   private int id;
+   @Id
+   private int version;
+
+}
+public class MyKey implements Serializable {
+   private int id;
+   private int version;
+}
+
+5.how authentication work
+
+6.how do u use databse ?
+-> database.projectDb.connectionString=jdbc:postgresql://localhost:26257/projectDb?ssl=false&sslmode=disable
+
+7.how to read property for password?
+    1.application.properties:
+    mypassword=${password}
+
+    2.Then in your configuration class:
+    @Autowired
+    private Environment environment;
+
+    [...]//Inside a method
+    System.out.println(environment.getProperty("mypassword"));
+
+   3.In your configuration class
+    @Value("${password}")
+    private String herokuPath;
+
+    [...]//Inside a method
+    System.out.println(herokuPath);
+
+
