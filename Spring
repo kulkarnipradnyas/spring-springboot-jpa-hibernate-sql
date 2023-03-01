@@ -440,6 +440,7 @@ public class BasicConfiguration {
 24.How do you define beans for a specific profile?
 -> Using -Dspring.profiles.active=prod in VM Arguments
 In application.properties,spring.profiles.active=prod
+spring-boot:run -Dspring-boot.run.profiles=dev
 
 
 25.How do you create application configuration for a specific profile?
@@ -484,16 +485,6 @@ management.endpoints.web.base-path=/
 }
 
 31.how cyclic dependency works?(if there are 3 beans initiaze at the start, how can be handled?)
-
-******************************* interview questions **********************************************
-
-1.what is java stream?
-->a sequence of objects that supports various methods which can be pipelined to produce the desired result.
-
-2.what is map, and refers to what internally 
--> HashMap, LinkedHashMap, and TreeMap
-
-3.what if you want initalise bean on the basis of property?
 -> https://www.baeldung.com/circular-dependencies-in-spring
     1.When we have a circular dependency, it’s likely we have a design problem and that the responsibilities are not well separated. We should try to redesign the components properly.
     2.simple way to break the cycle is by telling Spring to initialize one of the beans lazily. So, instead of fully initializing the bean, 
@@ -502,6 +493,17 @@ management.endpoints.web.base-path=/
     instead of constructor injection. This way, Spring creates the beans, but the dependencies are not injected until they are needed.
     4.Another way to break the cycle is by injecting a dependency using @Autowired on one of the beans and then using a method annotated with @PostConstruct to set the other dependency.
     5.If one of the beans implements ApplicationContextAware, the bean has access to Spring context and can extract the other bean from there.
+
+******************************* interview questions **********************************************
+
+1.what is java stream?
+->a sequence of objects that supports various methods which can be pipelined to produce the desired result.
+
+2.what is map, and refers to what internally, hashtable  
+-> HashMap, LinkedHashMap, and TreeMap
+
+3.what if you want initalise bean on the basis of property?
+-> @ConditionalOnProperty(name="app.enabled", havingValue="true",matchIfMissing = true) annotation helps it initialise bean only if "app.enabled" is true
 
 4.what annotation we use for composite key as a ID?
 ->  @EmbeddedId
@@ -532,9 +534,9 @@ public class MyKey implements Serializable {
    private int version;
 }
 
-5.how authentication work
+5.how authentication work 
 
-6.how do u use databse ?
+6.how do u use database ?
 -> database.projectDb.connectionString=jdbc:postgresql://localhost:26257/projectDb?ssl=false&sslmode=disable
 
 7.how to read property for password?
@@ -554,5 +556,222 @@ public class MyKey implements Serializable {
 
     [...]//Inside a method
     System.out.println(herokuPath);
+
+8.What is @Transaction?   
+
+9.concurrent hashmap
+
+10.What are advantages of springboot over spring mvc?
+-> It reduce manual work of configuration by auto configuring it so that can focus on functionality.Even need to create server
+
+11.what configuration it is reducing and how?
+-> We can use annotation for beans and we have main springApplication annotation exist which handle lots of configuration
+@springApplication @componentScan @EnableAutoConfiguration(jar handling automatically(lombok))
+
+12.@restController-> exposing rest APIs. 
+ 1.In @RestController, we can not return a view.
+ 2.It’s the combination of @Controller and @ResponseBody annotation.
+@controller-> exposing rest APIs.
+ 1.In @Controller, we can return a view in Spring Web MVC. 
+ 2.In @Controller, we need to use @ResponseBody on every handler method.
+
+13.What is Spring profile?
+-> We have different environments.configuration we provide for them using this.
+
+14.What is put and patch?
+Put:
+    1.PUT is a technique of altering resources when the client transmits data that revamps the whole resource.
+    2.The PUT HTTP method is known to be unchanged. That means, if you retry a request numerous times, that will be equal to a single request conversion
+    3.The PUT method has high bandwidth.	
+Patch:
+    1.PATCH is a technique for transforming the resources when the client transmits partial data that will be updated without changing the whole data.
+    2.The PATCH HTTP method is believed to be non-idempotent. That means, if you retry the request multiple times, you will end up having multiple resources with different URIs.
+    3.Whereas, the PATCH method has comparatively low bandwidth.    
+
+ 15.difference between @PathParam @PathVariable   
+-> PathVariable -> take value from URI 
+@GetMapping("/foos/{id}")
+public String getFooById(@PathVariable String id)//abc
+http://localhost:8080/spring-mvc-basics/foos/abc 
+
+RequestParam -> to get data from an attribute
+public String getFooByIdUsingQueryParam(@RequestParam String id) //abc
+http://localhost:8080/spring-mvc-basics/foos?id=abc
+@PathParam 1. only can be used in rest
+@QueryParam:
+
+
+15.difference between monolithic and microservice architecture?
+monolithic-> whole application bundle on single server.
+micro-> application can be distributed with different service and can be deployed with different svc
+
+16.Lets say we have monolithic application and wants to convert into microservices what is your approach? Responsibility
+-> group the svc based on functioning.separate out based on grouping
+
+17. 3 svc are live A, B,C they are communicating with each other.something down how will you check?
+-> use circuit breaker(its design pattern).One microservice will inform to another.
+
+18.what is API gateway?
+-> all the service request could be channel through one server 
+
+19.How will you handle transactions in micro svc?
+->
+
+20.Have you implemented logging?
+-> Zipkin server for logging(timestamp)
+
+21.how will make your micro svc secure?
+-> jwt token
+
+22.In which layer we should implement security?
+-> In a scenario where you don't have such a messaging platform, you need to implement security at the microservices layer
+
+23.Difference between @Service and @Repository
+@Service:
+1.It always be used with your class and use to write business logic
+2.it mark class service provider
+
+@Repository:
+1.This layer is DAO layer and db related code written over here.(update,delete,get)
+2.dao provider
+
+24.What if my microservice do not respond for 15 mints?
+-> 1.can use circuit breaker  pattern.it stop flow of requests to service that is not responding in order to prevent failure.
+   This allows system to quickly recover from failures and reduce number of request that are sent to the failed request.
+   Can use cloud netflix hystrix command annotation.it helps to configure timeout and fallback method to call when service doesnt respond.
+   @Service
+   public class MyService{
+    @HystrixCommand(commandPRoperty={@HystrixProperty(name="execution.isolation.thread.timeoutInMillisecond,value='15000"),fallbackMethod="fallback"})
+    public string callExternalService(){}
+    public String fallback(){
+        return "fallback message"
+    }
+   }
+   Spring actuator gives lots of information including state of hystrix circuit breakers
+
+ 25.write a query to select all employees with same city name
+ -> select name from employee where city IN (select city from employee group by city having count(*) > 1)  
+
+ 26.how to trace if some microservice fails in another microservice?
+    1.Logging and monitoring:logging with log4 or slf4
+    2.can use zipkin 
+    3.by doing error handling
+    4.circuit breaker pattern
+
+ 17 what is difference between scope("singleTon") and singleTon pattern 
+ 
+ 18.what is difference between collection.synchronized vrs concurrenthashmap?
+ concurrenthashmap:
+   1.choose ConcurrentHashMap for performance-critical applications where there are far more write operations than there are read operations.
+   2.the ConcurrentHashMap allows threads to acquire locks on separate segments of the collection, and make modifications at the same time.
+ collection.synchronized:
+   1.We should favor Collections.synchronizedMap() when data consistency is of utmost importance
+   2.Collections.synchronizedMap() requires each thread to acquire a lock on the entire object for both read/write operations.   
+
+ 19.What is internal working of concurrenthashmap?
+
+ 20.what is internal working of hashmap?
+
+ 21.what is concurrentModification example?
+
+ 22.What all new feature came 11?
+    1.Running Java File with single command- You can directly run the file with java command and it implicitly compiles
+    2.New utility methods in String class-
+     1.This instance method returns a boolean value. Empty Strings and Strings with only white spaces are treated as blank.
+     2.lines() This method returns a stream of strings, which is a collection of all substrings split by lines.
+     3.strip(), stripLeading(), stripTrailing() strip() - Removes the white space from both, beginning and the end of string.
+     4.repeat(int) The repeat method simply repeats the string that many numbers of times as mentioned in the method in the form of an int.
+    3.Local-Variable Syntax for Lambda Parameters - (var s1, var s2) -> s1 + s2
+    4.Nested Based Access Control:
+        public class Main {
+    
+            public void myPublic() {
+            }
+        
+            private void myPrivate() {
+            }
+        
+            class Nested {
+        
+                public void nestedPublic() {
+                    myPrivate();
+                }
+            }
+        }
+        Method method = ob.getClass().getDeclaredMethod("myPrivate");
+        method.invoke(ob);
+
+    5.JEP 321: HTTP Client
+    6.Reading/Writing Strings to and from the Files.
+        Path path = Files.writeString(Files.createTempFile("test", ".txt"), "This was posted on JD");
+        System.out.println(path);
+        String s = Files.readString(path);
+        System.out.println(s); //This was posted on JD
+    7.JEP 328: Flight Recorder - . JFR is a profiling tool used to gather diagnostics and profiling data from a running Java application
+
+23.What is flatMap?
+->List<Integer> flatList= lists.stream.flatMap(list-> list.stream());
+
+24.What if wants to create map with employee city with count using stream 
+Map<String,Long> empCity= employees.stream().collect(Collectors.groupBy(Employee::getCity, Collectors.counting()));
+
+25.can we create different context of springboot?
+->
+
+26.When destroy bean is called?
+-> Its used for cleanup or resource deallocation process.
+ 1.bean class can implement DisposableBean interface it has 1 destroy method.
+ 2.@PreDestroy annotation will called just before bean is removed from application context.
+
+ 27.How can we create profile in springboot.(which is best maven or @Profile)?
+ ->
+
+ 28.How can we override environment in springboot, lets say mistakenly we chose wrong environment?
+
+ 29.How database connection works? what is hikari pool?
+
+ 30.what is difference between crudRepository and jpaRepository?
+ -> JPA extend crudRepository and PagingAndSorting repository
+ Crud Repository is the base interface and it acts as a marker interface.
+
+ 31.difference between authorization and authentication
+ ->you first need to know who the user is. This is known as authentication
+ To implement these Identity and Access Management (IAM) tasks easily, you can use OAuth 2.0, an authorization framework 
+
+ 32.what is @Transaction
+ -> @EnableTransactionManagement enabled transaction 
+ @Transactional annotation is used when you want the certain method/class(=all methods inside) to be executed in a transaction.
+ If you don't specify @Transactional, each DB call will be in a different transaction.
+
+ 33.Transaction Logging?
+ -> “org.springframework.transaction”=TRACE will enable logging
+
+ 34.TransactionRollback and TransactionNoRollback
+ @Transactional(rollbackFor = { SQLException.class })
+ @Transactional(noRollbackFor = { SQLException.class })
+ Note that by default, rollback happens for runtime, unchecked exceptions only. The checked exception does not trigger a rollback of the transaction
+
+ 35.Versions:
+ springboot-2.7.6
+ springframework- 5.3.24
+ log4j:2.17.2
+ hibernate:5.6.14.Final
+ hikaricp:5.0.1
+ jackson:2.13.4
+ httpclient:4.5.13
+ jaxb:2.3.1
+ jnit:4.13.1
+ mockito: 4.0.0
+ maven:[3.0.0, 3.8.4]
+
+
+ 36.what happens with working thread if that get exception? what if thread get die
+ -> it waits in threadpool 
+
+ executor framework?
+ fork join?
+ 
+
+
 
 

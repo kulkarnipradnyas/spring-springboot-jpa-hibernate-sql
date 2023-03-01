@@ -1,0 +1,72 @@
+1. class HelloWorld {
+    public static void main(String[] args) {
+       A a =new B();
+       a.method2(); //should give run time error as its created from A and A do not have this method
+       a.method1(); // it should call b's method as we created object of b
+    }
+}
+
+class A {
+    public void method1(){
+        System.out.println("method1"); 
+    }
+    
+}
+
+class B extends A {
+    public void method1(){
+          System.out.println("method1 b"); 
+    }
+      public void method2(){
+       System.out.println("method2");    
+    }
+     
+}
+
+2.
+String s="Test";
+String s1=new String("Test");
+System.out.println(s == s1); // false as reference are diff
+System.out.println(s.equals(s1));  // referring to same content string pool
+
+3.how many object will get created String s1=new String("Test");?
+->  2, first in heap memory and other in string literal pool
+
+4.what is method references?
+-> a way where u can refer method of function interface.
+System.out::println
+
+5.what is optional?
+-> its new class public and final.To handle null pointer exception(java.util)
+
+6.If data is null what optional instance will return?
+-> it should return optional value
+
+7.what Optional instance.isEmpty will return?
+->
+
+8.you want to run a thread using lambda expression?
+-> Using thread class or runnable interface.
+
+9. can you print hello world in main method using simple thread?
+-> create a thread class and create a instance of it.call start method 
+
+10.can you write sum method with lambda?
+-> interface Summable {
+    public int add(int a, int b);
+ }
+ Summable ad1=(a,b)->(a+b);  
+ System.out.println(ad1.add(1,2));
+
+ 11.What is encapsulation?
+ -> hiding complex things.we can achieve it by making data members private by hiding them and make methods,getter,setter public for people to use and offcourse what happens under that method is hidden to user.
+
+ 12.polymorphism?
+ 1.overloading (method signature with number of args, order of argument can be changed, return type)
+ and overriding(always has to be public,return type matters it should be same)[not allowed private,static,final]private and static do not give compilation error.
+    1.lets say parent have protected and child has public then fine
+    2.but we try to reduce access then compilation error
+    3.parent throwing IOException and child have parent of IO then it will give compilation error.
+
+13.    
+

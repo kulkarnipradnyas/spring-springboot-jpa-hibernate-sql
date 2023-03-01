@@ -1,0 +1,36 @@
+1.volatile keyword
+https://link.medium.com/1jQhoSci1qb
+
+2.Circuit breaker pattern
+-> https://link.medium.com/G1FzNbrfIrb
+
+3.Springboot external configuration with spring cloud config and spring actuator
+-> https://link.medium.com/terf3tsfIrb
+
+4.What are spring boot actuator and how they are helping in maintaining
+-> https://link.medium.com/e4aDYAtfIrb
+
+5.Microservice observability with zipkin and spring cloud sleuth.
+-> https://link.medium.com/7e6SPGufIrb
+
+6.Distributed tracing in microservice using zipkin, sleuth and elk stack.
+-> https://link.medium.com/I8SlnVvfIrb
+
+7.Microservice questions
+-> https://link.medium.com/Rmbx7OQuXvb
+
+8.Spring, Springboot annotation cheatsheet
+-> https://link.medium.com/7ZdBCORuXvb
+
+9.Solid principal
+-> https://link.medium.com/L5uMlSSuXvb
+
+
+JPA
+1.what is JPA?
+-> java object mapped to database table rows.You do mapping, jpa will create query for us.
+
+2.Relationships
+-> @OneToMany, @OneToOne, @ManyToMany
+
+3.

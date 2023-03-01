@@ -1,0 +1,107 @@
+1.Java Stack Memory?
+->1.Java Stack memory is used for the execution of a thread. They contain method-specific values that are short-lived and references
+ to other objects in the heap that is getting referred from the method. Stack memory is always referenced in LIFO (Last-In-First-Out) order. 
+ Whenever a method is invoked, a new block is created in the stack memory for the method to hold local primitive values and reference to other objects in the method.
+ As soon as the method ends, the block becomes unused and becomes available for the next method. Stack memory size is very less compared to Heap memory.
+ 2.We can use -Xss to define the stack memory size.
+ 
+ 2.Heap memory?
+ ->1.Java Heap space is used by java runtime to allocate memory to Objects and JRE classes. Whenever we create an object, it’s always created in the Heap space. Garbage Collection runs on the heap memory to free the memory used by objects that don’t have any reference. 
+ Any object created in the heap space has global access and can be referenced from anywhere of the application.
+ 2.We can use -Xms and -Xmx JVM option to define the startup size and maximum size of heap memory
+
+ 3.What is the numerical range of a char data type in Java? -> 0 to 65,535
+
+ 4.What is an Association -> person belongs to many banks and banks to belongs to person.
+
+ 5.aggregation? -> has a relationsip 
+
+ 6.Copy constructor? -> creating new object using constructor of another
+ Fruit f1 = new Fruit(399, "Ruby Roman Grapes");  
+ Fruit f2 = new Fruit(f1); 
+
+ 7.Shallow copy?
+ ->Test2 t1 = new Test2();
+    t1.a = 10;
+    t1.c.x = 30;
+    Test2 t2 = (Test2)t1.clone();
+    t2.a = 100;
+    t2.c.x = 300;
+    System.out.println(t1.a + " " + t1.b + " " + t1.c.x + " " + t1.c.y); //10 20 300 40
+    System.out.println(t2.a + " " + t2.b + " " + t2.c.x + " " + t2.c.y); //100 20 300 40 (here nested member got changed for both)
+
+ 8.Deep copy?
+ ->1. class Test2 implements Cloneable
+2. public Object clone() throws CloneNotSupportedException
+    {
+        Test2 t = (Test2)super.clone();
+        t.c = new Test();
+        t.c.x = c.x;
+        t.c.y = c.y;
+ 
+        // Create a new object for the field c
+        // and assign it to shallow copy obtained,
+        // to make it a deep copy
+        return t;
+    } 
+  3. Test2 t2 = (Test2)t1.clone();
+    t2.a = 100;
+    t2.c.x = 300;    
+    System.out.println(t1.a + " " + t1.b + " " + t1.c.x + " " + t1.c.y); //10 20 30 40
+    System.out.println(t2.a + " " + t2.b + " " + t2.c.x + " " + t2.c.y); //100 20 300 40
+
+  4.Serialization and Deserialization?
+  ->In terms of Rest, APIs Serialization is what Spring boot does when it converts the Java object to JSON object.implements Serializable 
+  , and similarly, Deserialization is when it converts JSON object to Java object.( ObjectMapper objectMapper = new ObjectMapper();)
+
+  5.What if client dont want unprocessed data in serialization?
+  ->@JsonIgnore
+
+  6.singleton pattern:
+  class A{  
+    private static A obj;  
+    private A(){}  
+   
+ public static A getA(){  
+   if (obj == null){  
+      synchronized(Singleton.class){  
+        if (obj == null){  
+            obj = new Singleton();//instance will be created at request time  
+        }  
+    }              
+    }  
+  return obj;  
+ }  
+ 7.String pool
+ -> A collection of strings in Java's Heap memory is referred to as Java String Pool.
+
+ 8.Why String is immutable
+ -> We know that almost every Java program contains a string, and it is used to save important data like usernames and passwords. So it should not be changed in-between.
+
+ 9. How many objects will be created from the following code?
+ -> String firstString = "Gaurav";--- string literal
+String secondString = "Gaurav";-------string literal shares object reference and value
+String thirdString =  new String("Gaurav"); new object
+Answ-> 2 
+
+
+10.What is the difference between the String,StringBuilder and StringBuffer?
+-> String is immutable and StringBuilder,StringBuffer are mutable.
+    StringBuffer:
+    1.synchronized and slow
+    StringBuffer:
+    1.Asysnchronised and fast
+
+11.Can we compare String using the == operator? What is the risk?
+->1.when we are comparing string using the == operator, we are comparing their object reference, whether these string variables are pointing towards the same string object or not.
+ String firstString = "Gaurav";
+ String secondString = "Gaurav";
+ String thirdString =  new String("Gaurav");
+ System.out.println(firstString == secondString); // true
+ System.out.println(firstString == thirdString); // false
+ System.out.println(firstString.equals(thirdString)); // true
+
+ 12.Can you convert String to Int and vice versa?
+ -> You can convert string to an integer using the valueOf() method and the parseInt() method of the Integer class.
+
+
