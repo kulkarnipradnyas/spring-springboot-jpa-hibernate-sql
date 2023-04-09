@@ -1,0 +1,521 @@
+
+1.what is java stream?
+->a sequence of objects that supports various methods which can be pipelined to produce the desired result.
+
+2.what is map, and refers to what internally, hashtable  
+-> HashMap, LinkedHashMap, and TreeMap
+
+3.what if you want initalise bean on the basis of property?
+-> @ConditionalOnProperty(name="app.enabled", havingValue="true",matchIfMissing = true) annotation helps it initialise bean only if "app.enabled" is true
+
+4.what annotation we use for composite key as a ID?
+->  @EmbeddedId
+    private MyKey myKey;
+    @Embeddable
+public class MyKey implements Serializable {
+
+    @Column(name = "Id", nullable = false)
+    private int id;
+
+    @Column(name = "Version", nullable = false)
+    private int version;
+
+    /** getters and setters **/
+}
+or 
+@Entity
+@IdClass(MyKey.class)
+public class YourEntity {
+   @Id
+   private int id;
+   @Id
+   private int version;
+
+}
+public class MyKey implements Serializable {
+   private int id;
+   private int version;
+}
+
+5.how authentication work?
+
+6.how do u use database ?
+-> database.projectDb.connectionString=jdbc:postgresql://localhost:26257/projectDb?ssl=false&sslmode=disable
+
+7.how to read property for password?
+    1.application.properties:
+    mypassword=${password}
+
+    2.Then in your configuration class:
+    @Autowired
+    private Environment environment;
+
+    [...]//Inside a method
+    System.out.println(environment.getProperty("mypassword"));
+
+   3.In your configuration class
+    @Value("${password}")
+    private String herokuPath;
+
+    [...]//Inside a method
+    System.out.println(herokuPath);
+
+8.What is @Transaction?   
+
+9.concurrent hashmap?
+
+10.What are advantages of springboot over spring mvc?
+-> It reduce manual work of configuration by auto configuring it so that can focus on functionality.Even need to create server
+
+11.what configuration it is reducing and how?
+-> We can use annotation for beans and we have main springApplication annotation exist which handle lots of configuration
+@springApplication @componentScan @EnableAutoConfiguration(jar handling automatically(lombok))
+
+12.@restController-> exposing rest APIs. 
+ 1.In @RestController, we can not return a view.
+ 2.It’s the combination of @Controller and @ResponseBody annotation.
+@controller-> exposing rest APIs.
+ 1.In @Controller, we can return a view in Spring Web MVC. 
+ 2.In @Controller, we need to use @ResponseBody on every handler method.
+
+13.What is Spring profile?
+-> We have different environments.configuration we provide for them using this.
+
+14.What is put and patch?
+Put:
+    1.PUT is a technique of altering resources when the client transmits data that revamps the whole resource.
+    2.The PUT HTTP method is known to be unchanged. That means, if you retry a request numerous times, that will be equal to a single request conversion
+    3.The PUT method has high bandwidth.	
+Patch:
+    1.PATCH is a technique for transforming the resources when the client transmits partial data that will be updated without changing the whole data.
+    2.The PATCH HTTP method is believed to be non-idempotent. That means, if you retry the request multiple times, you will end up having multiple resources with different URIs.
+    3.Whereas, the PATCH method has comparatively low bandwidth.    
+
+ 15.difference between @PathParam @PathVariable   
+-> PathVariable -> take value from URI 
+@GetMapping("/foos/{id}")
+public String getFooById(@PathVariable String id)//abc
+http://localhost:8080/spring-mvc-basics/foos/abc 
+
+RequestParam -> to get data from an attribute
+public String getFooByIdUsingQueryParam(@RequestParam String id) //abc
+http://localhost:8080/spring-mvc-basics/foos?id=abc
+@PathParam 1. only can be used in rest
+@QueryParam:
+
+
+16.difference between monolithic and microservice architecture?
+monolithic-> whole application bundle on single server.
+micro-> application can be distributed with different service and can be deployed with different svc
+
+17.Lets say we have monolithic application and wants to convert into microservices what is your approach? Responsibility
+-> group the svc based on functioning.separate out based on grouping
+
+18. 3 svc are live A, B,C they are communicating with each other.something down how will you check?
+-> use circuit breaker(its design pattern).One microservice will inform to another.
+
+19.what is API gateway?
+-> all the service request could be channel through one server 
+
+20.How will you handle transactions in micro svc?
+->
+
+21.Have you implemented logging?
+-> Zipkin server for logging(timestamp)
+
+22.how will make your micro svc secure?
+-> jwt token, Spring security, AOP
+
+23.In which layer we should implement security?
+-> In a scenario where you don't have such a messaging platform, you need to implement security at the microservices layer
+
+24.Difference between @Service and @Repository
+@Service:
+1.It always be used with your class and use to write business logic
+2.it mark class service provider
+
+@Repository:
+1.This layer is DAO layer and db related code written over here.(update,delete,get)
+2.dao provider
+
+25.What if my microservice do not respond for 15 mints?
+-> 1.can use circuit breaker  pattern.it stop flow of requests to service that is not responding in order to prevent failure.
+   This allows system to quickly recover from failures and reduce number of request that are sent to the failed request.
+   Can use cloud netflix hystrix command annotation.it helps to configure timeout and fallback method to call when service doesnt respond.
+   @Service
+   public class MyService{
+    @HystrixCommand(commandPRoperty={@HystrixProperty(name="execution.isolation.thread.timeoutInMillisecond,value='15000"),fallbackMethod="fallback"})
+    public string callExternalService(){}
+    public String fallback(){
+        return "fallback message"
+    }
+   }
+   Spring actuator gives lots of information including state of hystrix circuit breakers
+
+ 26.write a query to select all employees with same city name
+ -> select name from employee where city IN (select city from employee group by city having count(*) > 1)  
+
+ 27.how to trace if some microservice fails in another microservice?
+    1.Logging and monitoring:logging with log4 or slf4
+    2.can use zipkin 
+    3.by doing error handling
+    4.circuit breaker pattern
+
+28. what is difference between scope("singleTon") and singleTon pattern 
+ 
+29.what is difference between collection.synchronized vrs concurrenthashmap?
+ concurrenthashmap:
+   1.choose ConcurrentHashMap for performance-critical applications where there are far more write operations than there are read operations.
+   2.the ConcurrentHashMap allows threads to acquire locks on separate segments of the collection, and make modifications at the same time.
+ collection.synchronized:
+   1.We should favor Collections.synchronizedMap() when data consistency is of utmost importance
+   2.Collections.synchronizedMap() requires each thread to acquire a lock on the entire object for both read/write operations.   
+
+30.What is internal working of concurrenthashmap?
+
+31.what is internal working of hashmap?
+
+32..what is concurrentModification example?
+
+33.What all new feature came 11?
+    1.Running Java File with single command- You can directly run the file with java command and it implicitly compiles
+    2.New utility methods in String class-
+     1.This instance method returns a boolean value. Empty Strings and Strings with only white spaces are treated as blank.
+     2.lines() This method returns a stream of strings, which is a collection of all substrings split by lines.
+     3.strip(), stripLeading(), stripTrailing() strip() - Removes the white space from both, beginning and the end of string.
+     4.repeat(int) The repeat method simply repeats the string that many numbers of times as mentioned in the method in the form of an int.
+    3.Local-Variable Syntax for Lambda Parameters - (var s1, var s2) -> s1 + s2
+    4.Nested Based Access Control:
+        public class Main {
+    
+            public void myPublic() {
+            }
+        
+            private void myPrivate() {
+            }
+        
+            class Nested {
+        
+                public void nestedPublic() {
+                    myPrivate();
+                }
+            }
+        }
+        Method method = ob.getClass().getDeclaredMethod("myPrivate");
+        method.invoke(ob);
+
+    5.JEP 321: HTTP Client
+    6.Reading/Writing Strings to and from the Files.
+        Path path = Files.writeString(Files.createTempFile("test", ".txt"), "This was posted on JD");
+        System.out.println(path);
+        String s = Files.readString(path);
+        System.out.println(s); //This was posted on JD
+    7.JEP 328: Flight Recorder - . JFR is a profiling tool used to gather diagnostics and profiling data from a running Java application
+
+34..What is flatMap?
+->List<Integer> flatList= lists.stream.flatMap(list-> list.stream());
+
+35.What if wants to create map with employee city with count using stream 
+Map<String,Long> empCity= employees.stream().collect(Collectors.groupBy(Employee::getCity, Collectors.counting()));
+
+36.can we create different context of springboot?
+->
+
+37.When destroy bean is called?
+-> Its used for cleanup or resource deallocation process.
+ 1.bean class can implement DisposableBean interface it has 1 destroy method.
+ 2.@PreDestroy annotation will called just before bean is removed from application context.
+
+38.How can we create profile in springboot.(which is best maven or @Profile)?
+ ->
+
+39.How can we override environment in springboot, lets say mistakenly we chose wrong environment?
+
+40.How database connection works? what is hikari pool?
+
+41.what is difference between crudRepository and jpaRepository?
+ -> JPA extend crudRepository and PagingAndSorting repository
+ Crud Repository is the base interface and it acts as a marker interface.
+
+42.difference between authorization and authentication
+ ->you first need to know who the user is. This is known as authentication
+ To implement these Identity and Access Management (IAM) tasks easily, you can use OAuth 2.0, an authorization framework 
+
+43.what is @Transaction
+ -> @EnableTransactionManagement enabled transaction 
+ @Transactional annotation is used when you want the certain method/class(=all methods inside) to be executed in a transaction.
+ If you don't specify @Transactional, each DB call will be in a different transaction.
+
+44.Transaction Logging?
+ -> “org.springframework.transaction”=TRACE will enable logging
+
+45.TransactionRollback and TransactionNoRollback
+ @Transactional(rollbackFor = { SQLException.class })
+ @Transactional(noRollbackFor = { SQLException.class })
+ Note that by default, rollback happens for runtime, unchecked exceptions only. The checked exception does not trigger a rollback of the transaction
+
+46.Versions:
+ springboot-2.7.6
+ springframework- 5.3.24
+ log4j:2.17.2
+ hibernate:5.6.14.Final
+ hikaricp:5.0.1
+ jackson:2.13.4
+ httpclient:4.5.13
+ jaxb:2.3.1
+ jnit:4.13.1
+ mockito: 4.0.0
+ maven:[3.0.0, 3.8.4]
+
+
+47.what happens with working thread if that get exception? what if thread get die
+ -> it waits in threadpool 
+
+48.executor framework?
+49.explain fork join?
+
+-------------------------------------------------------------------------------------------------------------
+1.What is immutable class
+2.What are default methods.Give example
+3.what are abstract class? If no abstract method will that class be abstract class?
+4.Can function interface have default methods? can we oevrride it?
+5.If immutable class has getter and has list of user on get.It will get collection and user can modify it.How to handle it?
+6.What is group id in kafka?
+7.How much thread used in kafka?
+8.IF msg is sent in kafka, how will it get distributed among partion? will it go in same partion?
+9.When java program stops working?
+10.What is daemon thread?
+11.Why spring boot keep running and java program does not?
+12.what are reference type?
+13.What if stream of employee gievn and want to filter based on name
+14.Explain thread executablePool in springboot how to shut it?
+15.Time complexity vrs space complexity
+16.concurrent hashmap and internal working(repeated que 9)
+17.Synchronization vrs reentrant lock
+18.What to do to set contextType in springboot.
+19.What if we want to consume xml format only what annotation will be used? - @consume
+20.Thread life cycle 
+21.Access Modifier
+
+-------------------------------------------------------------------------------------------------------------
+
+1.Can we override static method?
+2.Can we write final in immutable class
+3.Create factory pattern
+4.Create singleton pattern 
+5.Difference between outofMemory and stackoverflow error 
+6.What is stream?
+7.What is volatile and where it exactly get stored
+8.Memory management explain 
+9.What is equals and hashcode
+10.Internal working of hashmap(repeated que 9)
+11.What if write static block in singleton 
+12.What is cohensive and aggregation
+13.Why string used as a key in hashmap
+14.what happens if we call run method of thread
+15.Explain executor service
+16.what is PostConstruct and where to use it?
+17.How singleton pattern can be broken? how to solve it
+18.Write a code to get count of characters using stream
+19.write a code shift all 0 from array to right
+20.write a code to rpint all combination on which have addition 7.
+21.BlockQueue, priorityQueue and counterlatch explain 
+
+__________________________________________________________________________________________________________________
+
+1.What if we inject prototype bean into singletob, will it create new instance?
+2.How wil you manage log in without saving token or password into reducer or storage  or cookie?
+3.If there is in built project how will you capture logs?
+4.What to use to close db connection or such things in spring container? - @PreDestroy @decomposable bean
+5.How will you use AOP in spring security or configure endpoint(what to allowe and what not too, role based authentication)
+6.There is responseObject from where you dont want to send any instance Variable outside what to do? - @JSonIgnore
+7.What is transient keyword
+8.What are constraint in SQL, notnull, unique, max, min etc..
+9.Unique key vrs Primary key
+10.There are 100 accounts, 1 account will have 20,30 transactions.How to keep those in order for 1 user - LinkedHashMap
+11.Dependency injection - constructor, Autowired, Setter explain difference
+
+_______________________________________Here___________________________________________________________________________
+
+1.What is difference between FileInputStream and FileBufferedReader
+2.What is monito , process and task
+3.What is difference between semaphore and monitor
+4.If you are creating one endpoint what will you handle in terms of exception handling
+5.create a website like amazon, what database will you pick and Why
+6.Can we do index based searching in relation based database
+7.There are 4 microservices, all are async, 1st depend on 2nd then how will you handle exception handling and send response to user.
+8.What if something gone wrong in 1st micro svc, how to handle? how will you debug that?
+9.What is difference between run as java application and debug as java application
+10.When we say debug, what happens under the hood?
+11.Where is my car parked application, explain architecture.
+12.When you do transaction what security concerns you need to take care.
+13.Why we generally say do not refresh page after api call? what information may get lost?
+14.What is LineNumberReader class?
+15.How transaction and commit happens
+16.At a time how many request backend can handle?
+17.What is difference between APIGateway and loadBalancer
+18.Difference between deep copy and shallow copy
+
+______________________________________________________
+
+1.
+Given a hierarchical structure with nodes defined by this interface:
+
+public interface Node {
+	/** Returns the child nodes, or the empty list if there are none.  Never null */
+	List<Node> getChildNodes();
+	/** The name assigned to the node.  Never null */
+	String getNodeName();
+}
+
+Implement a depth-first search method which finds the first Node with a given Name starting from a given Node and searching all child nodes:
+
+/** Find the first node in the tree with the specified name using a depth-first search, or null if it cannot be found */
+Node findNodeByName(String name, Node startNode) { 
+	// Implementation goes here
+}
+
+
+——— Magic Vashi------
+
+You can assume that the structure does not loop back on itself.  That is, there are no child nodes which refer back up to any parent nodes in the hierarchy.
+
+For example, given "Node A" as the startNode:
+
+{
+    name: "Node A",
+    childNodes:
+    [{
+        name: "Node B",
+        childNodes:
+        [{
+				name: "Node C",
+				childNodes: []
+        }]
+	},
+	{
+		name: "Node C",
+		childNodes: []
+    }]
+}
+
+In a diagram:
+
+    A
+   / \
+  B   C
+ / 
+C
+ 
+findNodeByName("Node C", nodeA) should return the Node C that is a child of Node B
+
+//
+
+{
+    name: "Node B”,
+    childNodes:
+    [{
+        name: "Node C”,
+        childNodes:
+       }]
+}
+2.Accolite
+class Person{
+	String name;
+	@Override
+	public int hashCode() {
+		return (int)name.charAt(0);
+	}
+
+	/*
+	 * @Override public boolea
+/*
+	 * @Override public boolean equals(Object obj) { if (this == obj) return true;
+	 * if (obj == null) return false; if (getClass() != obj.getClass()) return
+	 * false; Person other = (Person) obj; return Objects.equals(name, other.name);
+	 * }
+	 */
+	public Person(String name) {
+		super();
+		this.name = name;
+	}
+public class HashMapTest {
+	
+	public static void main(String[] args) {
+		Map<Person,Integer> map = new HashMap<>();
+		map.put(new Person("pradyumna"), 10);
+		map.put(new Person("pradyumna"), 10);
+		Set<Person> keys= map.keySet();
+		keys.forEach(p->System.out.println("data="+p.name+ "  value="+map.get(p)+"  hashcode="+p.hashCode()+"  index="+p.hashCode()%10));
+		LinkedList<String> 
+	}
+
+} 
+- how it will work line by line 
+- What if we try to get key which does not exist? map.get("abc) ===> null
+
+3.server screen in react, employee id as a search parameter.it will call springboot apps expose API.
+How to make use of peristance layer -> retriving employee information through database.
+
+4.verioning in hibernate and concurrency relation
+5.open session in hibernate.
+
+-------------------------------------------------------------------------------------------------------------------
+2nd round 
+1.how to write a view for employee 
+2.what is eager and lazy loading for table?
+3.there is a employee class and address onto it, what if i want to retrive address along with that?
+4.how to exclude any library which is exist in both the package like tomcat in jpa-starter and flipkart-starter
+5.what is resourcemapping?
+6.what if there are 2 dbs, and for dev env i want to use oracle and for prod i want to use mysql
+7.what is configuration vrs enableAutoconfiguration
+8.diff between controller and restcontroller
+9.what if my dataservice goes down and i want to handle that as well
+10.diff between foreignClient and restclient
+11.diff between spring mvc and stringboot
+12.what are interceptor in springboot
+-------------------------------------------------------------------------------------------------------------------------
+1.What if there are a folder which 2 process trying to read how will you handle that?
+2.How will u do error handling for offer generation product?
+3.How will you manage concurrency if trying to access database operation with 2 different applications? if one application context @transaction will help.
+4.There is try and catch block, catch has FileDoesNotExist and IOException how will you handle? is it correct?
+5.class A{} class B extends A{} B a= new A()=>  it shoudl give classCastException
+6.Difference between @valid and @validated?
+7.I have a method findById what it should written? list or object for emplpoyee?
+8.One query taking so much time in execution, how will you optimise it(indexing)
+9.What is difference between TOP and limit? find 2nd highest salary
+10.Write a program to return any value if string start with "pk" or else null with stream.
+List<String> ss= List.of(“pk”,”pk1”,”pk3”,”pk4”,”pk5”)
+11.Condition based qyery building in JPA explain.
+12.What is facade pattern
+13.Write a code to return LSH cache in java.where if you can set limit.If while pushing value it exceeds limit remove 1st pushed value.
+Provided condition if you access any previous value lets say 1st element it will not be eligible for removal.
+14.What is difference between parallel and completable feature
+15.Exception handling rules, in terms of throwing error.
+
+
+__________________________________________________________________________________________________________________
+
+Coding based question:
+1.Write a program to print hierarchy of employee
+2.List<String> ss= List.of("eat","tea","tan","ate","nat","bat");
+write a program to get [["bat"],["nat","tan"],["ate","eat","tea"]]
+3.There is Head quarter branch bank and has multiple subbranch, Write a code to get total of all the subbranch of head quarter.
+Assume 1 subbranch can have multiple subbranch and so on.
+4.List<Integer> ls= List.of(1,2,3,3,2,1);
+find second highest integer;
+5.Student list has name, age hieght ,weight now sort student on the basis of sort age, height weight
+6.Find pallindrom numner.
+7.Create a clock in javascript
+8.Design Elevator.If there are 2 lifts how will you code
+9.(kotak)Design the social media application similar to Facebook using the given requirements Users should be able to see the news feed.
+ Assume 20 million active users.Whenever the user login to the application startup page with a news feed should be shown.
+10.Assume There is microservice which sends  userName, Number, message to sent.Design a notification system.
+What component will be involved.What database needs to be choose and why.How flow overover go.
+
+
+
+
+
+
+
